@@ -71,7 +71,6 @@ public class NarudzbenicaController implements Serializable{
         for (StavkeNarudzbenice sn : nar.getStavkeNarudzbeniceCollection()) {
             System.out.println("Stavke nar sa forme: "+sn.getStavkeNarudzbenicePK() +" kolicine "+sn.getKolicina());
             suma += Integer.parseInt(sn.getKolicina());
-            //System.out.println(suma);
         }
         System.out.println("Ukupno: "+suma);
         nar.setUkupnoNaruceno(suma+"");
@@ -139,20 +138,15 @@ public class NarudzbenicaController implements Serializable{
         }
         
         if(suma!=0){
-            System.out.println("Ukupno azuriraj: "+suma);
             nar.setUkupnoNaruceno(suma+"");
         }
         
         for (StavkeNarudzbenice sn : nar.getStavkeNarudzbeniceCollection()) {
             if(sn.getStatus().equals(Status.DELETE)){
                 razlikaObrisi = Integer.parseInt(nar.getUkupnoNaruceno());
-                System.out.println("Ukupno nar je "+nar.getUkupnoNaruceno());
-                System.out.println("Kolicina koju brisemo je "+sn.getKolicina());
-                System.out.println("Razlika obrisi je "+razlikaObrisi);
                 nar.setUkupnoNaruceno(razlikaObrisi+"");
             } else{
                 sumaAzurirajStavku+= Integer.parseInt(sn.getKolicina());
-                //System.out.println("SumaAzurirajStavku "+sumaAzurirajStavku);
                 nar.setUkupnoNaruceno(sumaAzurirajStavku+"");
             }
         }
@@ -216,7 +210,7 @@ public class NarudzbenicaController implements Serializable{
         return mv;
     }
     
-     // azurira stavku koja je vec u bazi
+     //azurira stavku koja je vec u bazi
     @RequestMapping(value = "/azurirajStavku", method = RequestMethod.POST)
     public String azurirajStavkuPost(@ModelAttribute StavkaZaPrikaz s) throws ParseException
     {
@@ -227,7 +221,6 @@ public class NarudzbenicaController implements Serializable{
         for (StavkeNarudzbenice sn : nar.getStavkeNarudzbeniceCollection()) {
             
             if(sn.getOpisStavke().trim().equals(s.getOpisStavke().trim()) && sn.getSifraProizvoda().getSifraProizvoda().equals(s.getSifraProizvoda().getSifraProizvoda()) && !sn.getStatus().equals(Status.UPDATENEW)){
-                //System.out.println("RB "+ sn.getStavkeNarudzbenicePK().getRbStavke());
                 s.setRbStavke(sn.getStavkeNarudzbenicePK().getRbStavke());
                 break;
             }
@@ -236,10 +229,8 @@ public class NarudzbenicaController implements Serializable{
                 s.setStatus(Status.UPDATENEW);
             }
         }
-        
-        
+
         nar.azurirajStavku(s, nar.getBrojNarudzbenice());
-        
         return "redirect:/narudzbenica/azuriraj/" + nar.getBrojNarudzbenice();
 
     }
@@ -248,7 +239,6 @@ public class NarudzbenicaController implements Serializable{
     @RequestMapping(value = "/azurirajNovuStavku", method = RequestMethod.GET)
     public ModelAndView azurirajNovuStavkuGet() throws ParseException
     {
-       
         List<Proizvod> proizvodi = DBBroker.getInstance().vratiSve(Proizvod.class, "Proizvod");
 
         StavkeNarudzbenice stNewUpdate = new StavkeNarudzbenice();
@@ -274,8 +264,6 @@ public class NarudzbenicaController implements Serializable{
         
         String kolicina = s.getKolicina();
         System.out.println("Azurirana kolicina stavke je: "+kolicina);
-        
-        
         nar.azurirajStavku(s, 0);
         nar.setUkupnoNaruceno(nar.getUkupnoNaruceno()+kolicina);
         
@@ -330,11 +318,7 @@ public class NarudzbenicaController implements Serializable{
         {
             if (s.getStavkeNarudzbenicePK().equals(pk))
             {
-                //int kolicina = Integer.parseInt(s.getKolicina());
-                System.out.println("Nasao je stavku sa prosledjenim pk u listi stavki");
-                
                 s.setStatus(Status.DELETE);
-                
                 return true;
             }
         }
@@ -345,7 +329,7 @@ public class NarudzbenicaController implements Serializable{
     @RequestMapping(value = "/obrisiNovuStavku", method = RequestMethod.POST)
     public String obrisiNovuStavkuPost(HttpServletRequest request) throws ParseException
     {
-        //izvucem sve podatke za stavku
+        //izvlacim sve podatke za stavku
         String opisStavke = request.getParameter("OpisStavke");
         String kolicina = request.getParameter("Kolicina");
         System.out.println("ObrisiNS: opis "+opisStavke+" Kolicina "+kolicina);
@@ -353,10 +337,9 @@ public class NarudzbenicaController implements Serializable{
         for (StavkeNarudzbenice st : nar.getStavkeNarudzbeniceCollection())
         {
             
-            //uporedim sve podatke sa onim sto su vec u listi
+            //uporedjujem sve podatke sa onim sto su vec u listi
             if (st.getOpisStavke().equals(opisStavke)  &&  st.getKolicina().equals(kolicina))
             {
-                
                 int ukNaruceno = Integer.parseInt(nar.getUkupnoNaruceno());
                 int razlika = ukNaruceno - Integer.parseInt(st.getKolicina());
                 nar.getStavkeNarudzbeniceCollection().remove(st);
