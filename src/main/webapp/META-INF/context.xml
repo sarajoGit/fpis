@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiResourceLocking="true" path="/SaraFPIS">
+  <Resource auth="Container" driverClassName="com.mysql.cj.jdbc.Driver" maxActive="20" maxIdle="10" maxWait="-1" name="fpis_proj" password="root" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/fpis_proj?zeroDateTimeBehavior=convertToNull" username="root"/>
+  <ResourceLink global="jdbc/fpis_proj" name="jdbc/fpis_proj" type="javax.sql.DataSource"/>
+</Context>
